@@ -4,7 +4,8 @@ import * as commonActions from './actions/common';
 export const mapDispatchToProps = (dispatch) => {
 	return {
 		setPlay: (play)=>dispatch(commonActions.setPlay(play)),
-		setSliderPosition: (position)=>dispatch(commonActions.setSliderPosition(position))
+		setSliderPosition: (sliderPosition)=>dispatch(commonActions.setSliderPosition(sliderPosition)),
+		setInterval: (animationFrame)=>dispatch(commonActions.setInterval(animationFrame))
 	};
 };
 

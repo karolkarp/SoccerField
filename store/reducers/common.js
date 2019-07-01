@@ -14,7 +14,7 @@ export const common = (state = initialState, action) => {
 		case 'SET_SLIDER_POSITION':
 			return {
 				...state,
-				position: action.sliderPosition,
+				sliderPosition: action.sliderPosition,
 			};
 		default:
 			return state;
