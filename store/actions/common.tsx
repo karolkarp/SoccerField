@@ -25,3 +25,10 @@ export function setMoveAnimations(moveAnimations): object{
 		moveAnimations
 	};
 }
+
+export function setFieldDimensions(fieldDimensions): object{
+	return{
+		type:'SET_FIELD_DIMENSIONS',
+		fieldDimensions
+	};
+}

@@ -23,27 +23,28 @@ function PlayButton(props: Props): React.ReactNode {
 
 	const { common:{play} } = props;
 	return (
-		<Button style={styles.buttonColor} iconLeft rounded bordered onPress={handlePlay}>
+		<Button style={styles.button} iconLeft rounded bordered onPress={handlePlay}>
 			{play &&
-			   <Icon style={styles.iconColor} name='pause' />
+			   <Icon style={styles.icon} name='pause' />
 			}
 			{!play &&
-            <Icon style={styles.iconColor} name='ios-play-circle' />
+            <Icon style={styles.icon} name='ios-play-circle' />
 			}
-			<Text style={styles.buttonTextColor}>{play ? 'Pause Session' : 'Run Session'}</Text>
+			<Text style={styles.buttonText}>{play ? 'Pause Session' : 'Run Session'}</Text>
 		</Button>
 	);
 }
 export default connect(mapStateToProps, mapDispatchToProps)(PlayButton);
 
 const styles = StyleSheet.create({
-	buttonColor:{
-		borderColor:style.fontColor
+	button:{
+		borderColor:style.fontColor,
+		height:30,
 	},
-	iconColor:{
+	icon:{
 		color:style.fontColor
 	},
-	buttonTextColor:{
+	buttonText:{
 		color:style.fontColor
 	}
 });
