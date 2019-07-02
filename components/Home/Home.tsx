@@ -48,9 +48,7 @@ class Home extends React.Component<Props> {
 
 	public componentDidUpdate(prevProps: Props): void{
 		const { common:{ play:prevPlay, currentFrame: prevFrame }} = prevProps;
-		const { common:{ play, currentFrame, sliderPosition }} = this.props;
-
-		console.log(currentFrame, sliderPosition);
+		const { common:{ play, currentFrame, sliderPosition }, setPlay, setCurrentFrame, setSliderPosition} = this.props;
 
 		if(play && prevPlay !== play){
 			this.movePlayers();
@@ -64,21 +62,29 @@ class Home extends React.Component<Props> {
 			// this.animate(); // TODO:
 			this.setPositions();
 		}
+		
+		if(data.player_positions[currentFrame] === undefined){
+			clearInterval(this._interval);
+			setPlay(false);
+			setCurrentFrame(0);
+			setSliderPosition(0);
+		}
 	}
 
 	
 	private setPositions(): void{
-		const {setMoveAnimations, common:{ currentFrame } } = this.props;
+		const {setMoveAnimations, common:{ currentFrame, sliderPosition }, setCurrentFrame, setSliderPosition, setPlay } = this.props;
 		let moveAnimations: object[] = [];
-
-		data.player_positions[currentFrame].forEach((item): void => {
-			moveAnimations.push({
-				playerId:item[0],
-				position:new Animated.ValueXY({ x: this.setPlayerPosition(item[1], 'width'), y: this.setPlayerPosition(item[2]) })
+		if(data.player_positions[currentFrame]){
+			data.player_positions[currentFrame].forEach((item): void => {
+				moveAnimations.push({
+					playerId:item[0],
+					position:new Animated.ValueXY({ x: this.setPlayerPosition(item[1], 'width'), y: this.setPlayerPosition(item[2]) })
+				});
 			});
-		});
 
-		setMoveAnimations(moveAnimations);
+			setMoveAnimations(moveAnimations);
+		}
 	}
 
 	private setPlayerPosition(size: number, aspect: string = 'height'): number{
@@ -89,10 +95,13 @@ class Home extends React.Component<Props> {
 		const { common:{ currentFrame }, setCurrentFrame, setSliderPosition} = this.props;
 		let i = 0;
 		this._interval = setInterval((): void => {
-			if(i <= data.player_positions.length)
+			if(i <= data.player_positions.length){
 				setCurrentFrame(i+currentFrame);
-				setSliderPosition(i+currentFrame);
-			i++;
+				if(data.player_positions[currentFrame] !== undefined){
+					setSliderPosition(i+currentFrame);
+				}
+				i++;
+			}
 		}, 100);
 	}
 	
@@ -119,9 +128,10 @@ class Home extends React.Component<Props> {
 	}
 
 	public handleSlidingComplete(position: number): void{
-		console.log(position);
 		const { setSliderPosition } = this.props;
-		setSliderPosition(position);
+		if( data.player_positions.length !== position ){
+			setSliderPosition(position);
+		}
 	}
 	
 	public handleValueChange(currentFrame: number): void{
@@ -145,7 +155,6 @@ class Home extends React.Component<Props> {
 				</Animated.View >
 			);
 		});
-
 
 		return (
 			<View style={styles.mainView}>
