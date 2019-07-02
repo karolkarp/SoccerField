@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import React from 'react';
-import { View, Image, StyleSheet, Animated, ImageBackground, Dimensions  } from 'react-native';
-import { Button, Icon, Text, Spinner} from 'native-base';
+import { View, StyleSheet, Animated, ImageBackground, Dimensions  } from 'react-native';
+import { Text, Spinner} from 'native-base';
 import { connect } from 'react-redux';
 import { mapStateToProps, mapDispatchToProps } from '../../store/mapToProps';
 import Slider from '@react-native-community/slider';
-import PlayerAnnotation from '../Common/PlayerAnnotation';
 import PlayButton from '../Common/PlayButton';
 import data from '../../data';
 import style from '../../style';
@@ -30,7 +29,7 @@ interface Props {
 }
 
 
-class Home extends React.PureComponent<Props> {
+class Home extends React.Component<Props> {
 	_interval: any;
 
 	private constructor(props: Props){
@@ -39,7 +38,7 @@ class Home extends React.PureComponent<Props> {
 		this._interval = undefined;
 
 		this.handleSlidingStart = this.handleSlidingStart.bind(this);
-		this.handleSlidingEnd = this.handleSlidingEnd.bind(this);
+		this.handleSlidingComplete = this.handleSlidingComplete.bind(this);
 		this.handleValueChange = this.handleValueChange.bind(this);
 	}
 
@@ -49,7 +48,9 @@ class Home extends React.PureComponent<Props> {
 
 	public componentDidUpdate(prevProps: Props): void{
 		const { common:{ play:prevPlay, currentFrame: prevFrame }} = prevProps;
-		const { common:{ play, currentFrame }} = this.props;
+		const { common:{ play, currentFrame, sliderPosition }} = this.props;
+
+		console.log(currentFrame, sliderPosition);
 
 		if(play && prevPlay !== play){
 			this.movePlayers();
@@ -59,7 +60,7 @@ class Home extends React.PureComponent<Props> {
 			clearInterval(this._interval);
 		}
 
-		if(play && prevFrame !== currentFrame){
+		if(prevFrame !== currentFrame){
 			// this.animate(); // TODO:
 			this.setPositions();
 		}
@@ -85,11 +86,12 @@ class Home extends React.PureComponent<Props> {
 	}
 
 	private movePlayers(): void{
-		const { common:{ currentFrame }, setCurrentFrame} = this.props;
+		const { common:{ currentFrame }, setCurrentFrame, setSliderPosition} = this.props;
 		let i = 0;
 		this._interval = setInterval((): void => {
 			if(i <= data.player_positions.length)
 				setCurrentFrame(i+currentFrame);
+				setSliderPosition(i+currentFrame);
 			i++;
 		}, 100);
 	}
@@ -116,7 +118,8 @@ class Home extends React.PureComponent<Props> {
 		setPlay(false);
 	}
 
-	public handleSlidingEnd(position: number): void{
+	public handleSlidingComplete(position: number): void{
+		console.log(position);
 		const { setSliderPosition } = this.props;
 		setSliderPosition(position);
 	}
@@ -128,7 +131,7 @@ class Home extends React.PureComponent<Props> {
 	
 	
 	public render(): React.ReactNode {
-		const { common: { currentFrame, moveAnimations } } = this.props;
+		const { common: { sliderPosition, moveAnimations } } = this.props;
 		if( moveAnimations.length < 1){
 			return <Spinner/>;
 		}
@@ -166,10 +169,10 @@ class Home extends React.PureComponent<Props> {
 						minimumTrackTintColor="#FFFFFF"
 						maximumTrackTintColor="#000000"
 						onSlidingStart={this.handleSlidingStart}
-						onSlidingEnd={this.handleSlidingEnd}
+						onSlidingComplete={this.handleSlidingComplete}
 						onValueChange={this.handleValueChange}
 						step={10}
-						value={currentFrame}
+						value={sliderPosition}
 					/>
 				</View>
 			</View>
