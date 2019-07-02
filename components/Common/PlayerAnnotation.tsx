@@ -11,13 +11,14 @@ import style from '../../style';
 const ANNOTATION_SIZE = 30;
 interface Props {
 	playerId: number;
+	stylesProp: object;
 }
 
 function PlayerAnnotation(props: Props): React.ReactNode {
 
-	const { playerId } = props;
+	const { playerId, stylesProp } = props;
 	return (
-		<View style={styles.playerContainer}>
+		<View style={[styles.playerContainer, {...stylesProp}]}>
 			<View style={styles.playerContainerFill} >
 				<Text style={styles.playerId}>{playerId}</Text>
 			</View>
@@ -35,9 +36,6 @@ const styles = StyleSheet.create({
 	  borderRadius: ANNOTATION_SIZE / 2,
 	  borderWidth: StyleSheet.hairlineWidth,
 	  borderColor: style.playerAnnotationColor,
-	  position:'absolute',
-	  bottom:'50%',
-	  left:'50%',
 	  marginLeft:-15,
 	  marginBottom:-15,
 	},
