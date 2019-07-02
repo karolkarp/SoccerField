@@ -7,6 +7,7 @@ export const mapDispatchToProps = (dispatch): object => {
 		setSliderPosition: (sliderPosition: number): void=>dispatch(commonActions.setSliderPosition(sliderPosition)),
 		setCurrentFrame: (currentFrame: number): void=>dispatch(commonActions.setCurrentFrame(currentFrame)),
 		setMoveAnimations: (moveAnimations: object[]): void=>dispatch(commonActions.setMoveAnimations(moveAnimations)),
+		setFieldDimensions: (fieldDimensions: object): void=>dispatch(commonActions.setFieldDimensions(fieldDimensions)),
 	};
 };
 

@@ -20,11 +20,13 @@ interface Props {
 	setSliderPosition: (position: number) => {};
 	setCurrentFrame: (currentFrame: number) => {};
 	setMoveAnimations: (moveAnimations: object[]) => {};
+	setFieldDimensions: (fieldDimensions: object) => {};
 	common: {
 		play: boolean;
 		sliderPosition: number;
 		currentFrame: number;
 		moveAnimations: [{playerId: number; position: {x: number; y: number}}];
+		fieldDimensions: {width: number; height: number};
 	};
 }
 
@@ -40,6 +42,7 @@ class Home extends React.Component<Props> {
 		this.handleSlidingStart = this.handleSlidingStart.bind(this);
 		this.handleSlidingComplete = this.handleSlidingComplete.bind(this);
 		this.handleValueChange = this.handleValueChange.bind(this);
+		this.handleSoccerFieldChange = this.handleSoccerFieldChange.bind(this);
 	}
 
 	public componentDidMount(): void{
@@ -47,8 +50,8 @@ class Home extends React.Component<Props> {
 	}
 
 	public componentDidUpdate(prevProps: Props): void{
-		const { common:{ play:prevPlay, currentFrame: prevFrame }} = prevProps;
-		const { common:{ play, currentFrame, sliderPosition }, setPlay, setCurrentFrame, setSliderPosition} = this.props;
+		const { common:{ play:prevPlay, currentFrame: prevFrame, fieldDimensions:{ width:prevWidth } }} = prevProps;
+		const { common:{ play, currentFrame, fieldDimensions:{ width } }, setPlay, setCurrentFrame, setSliderPosition} = this.props;
 
 		if(play && prevPlay !== play){
 			this.movePlayers();
@@ -69,6 +72,10 @@ class Home extends React.Component<Props> {
 			setCurrentFrame(0);
 			setSliderPosition(0);
 		}
+
+		if(prevWidth !== width){
+			this.setPositions();
+		}
 	}
 
 	
@@ -88,7 +95,8 @@ class Home extends React.Component<Props> {
 	}
 
 	private setPlayerPosition(size: number, aspect: string = 'height'): number{
-		return aspect === 'width' ? width*size : fieldMinHeight*size;
+		const { common:{ fieldDimensions:{width, height} } } = this.props;
+		return aspect === 'width' ? width*size : height*size;
 	}
 
 	private movePlayers(): void{
@@ -138,6 +146,13 @@ class Home extends React.Component<Props> {
 		const { setCurrentFrame } = this.props;
 		setCurrentFrame(currentFrame);
 	}
+
+	public handleSoccerFieldChange(e:object):void{
+		const { setFieldDimensions } = this.props; 
+		const { layout: { width, height } } = e.nativeEvent; 
+		const fieldDimensions = {width, height}
+		setFieldDimensions(fieldDimensions);
+	}
 	
 	
 	public render(): React.ReactNode {
@@ -157,14 +172,16 @@ class Home extends React.Component<Props> {
 		});
 
 		return (
-			<View style={styles.mainView}>
+			<View style={styles.mainView} >
 				<View style={styles.buttonContainer}>
 					<PlayButton />
 				</View>
 				<View style={styles.soccerFieldContainer}>
 					<ImageBackground 
 						style={styles.imageBackground}
-						source={require('../../assets/images/soccer.png')}>
+						source={require('../../assets/images/soccer.png')}
+						onLayout={this.handleSoccerFieldChange}
+					>
 						{moveAnimations && moveAnimations.length > 0 
 							&& animations
 						}
